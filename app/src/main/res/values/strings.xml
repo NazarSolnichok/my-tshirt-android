@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">my-tshirt-android</string>
+    <string name="input">title input</string>
+    <string name="input_content">input content</string>
+    <string name="input_hint">input hint</string>
+    <string name="input_prefill">input prefill</string>
 </resources>
