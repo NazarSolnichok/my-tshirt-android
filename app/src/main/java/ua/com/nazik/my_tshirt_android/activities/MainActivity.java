@@ -1,80 +1,78 @@
 package ua.com.nazik.my_tshirt_android.activities;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.software.shell.viewmover.configuration.MovingParams;
+import com.software.shell.viewmover.movers.ViewMover;
+import com.software.shell.viewmover.movers.ViewMoverFactory;
+
 import ua.com.nazik.my_tshirt_android.R;
-import ua.com.nazik.my_tshirt_android.views.MyTextView;
 
-public class MainActivity extends AppCompatActivity implements View.OnFocusChangeListener, View.OnTouchListener {
+public class MainActivity extends AppCompatActivity {
 
-    private FrameLayout mainContainer;
-
-    TextView _view;
-    ViewGroup _root;
-    private int _xDelta;
-    private int _yDelta;
+    ViewMover mover;
+    MovingParams params;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //mainContainer = (FrameLayout)findViewById(R.id.main_container);
-        _root = (ViewGroup)findViewById(R.id.root);
+        FrameLayout relativeLayout = (FrameLayout) findViewById(R.id.root);
 
-        _view = new TextView(this);
-        _view.setText("TextView!!!!!!!!");
+        for(int i=0; i< relativeLayout.getChildCount(); ++i) {
+            final View view1 = relativeLayout.getChildAt(i);
+            view1.setOnTouchListener(new View.OnTouchListener() {
+                float x = 0;
+                float y = 0;
+                Boolean b = false;
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(150, 50);
-        layoutParams.leftMargin = 50;
-        layoutParams.topMargin = 50;
-        layoutParams.bottomMargin = -250;
-        layoutParams.rightMargin = -250;
-        _view.setLayoutParams(layoutParams);
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
 
-        _view.setOnTouchListener(this);
-        _root.addView(_view);
-    }
+                    if (view != view1)
+                        return false;
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_MOVE:
+                            if (b) {
+                                view.setX(view.getX() + event.getRawX() - x);
+                                view.setY(view.getY() + event.getRawY() - y);
+                                x = event.getRawX();
+                                y = event.getRawY();
+                            }
+                            break;
 
+                        case MotionEvent.ACTION_UP:
+                            b = false;
+                            break;
 
+                        case MotionEvent.ACTION_DOWN:
+                            x = event.getRawX();
+                            y = event.getRawY();
+                            b = true;
+                            view.clearFocus();
+                            break;
+                    }
 
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-
-    }
-
-    @Override
-    public boolean onTouch(View view, MotionEvent event) {
-        final int X = (int) event.getRawX();
-        final int Y = (int) event.getRawY();
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-                _xDelta = X - lParams.leftMargin;
-                _yDelta = Y - lParams.topMargin;
-                break;
-            case MotionEvent.ACTION_UP:
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                break;
-            case MotionEvent.ACTION_POINTER_UP:
-                break;
-            case MotionEvent.ACTION_MOVE:
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-                layoutParams.leftMargin = X - _xDelta;
-                layoutParams.topMargin = Y - _yDelta;
-                layoutParams.rightMargin = -250;
-                layoutParams.bottomMargin = -250;
-                view.setLayoutParams(layoutParams);
-                break;
+                    return true;
+                }
+            });
         }
-        _root.invalidate();
-        return false;
+
+
+
+
+
     }
+
+
 }
