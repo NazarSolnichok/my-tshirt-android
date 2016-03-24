@@ -1,30 +1,30 @@
 package ua.com.nazik.my_tshirt_android.activities;
 
-import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.MotionEvent;
-import android.view.Surface;
-import android.view.SurfaceHolder;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.design.widget.NavigationView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.squareup.picasso.Picasso;
@@ -38,6 +38,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ua.com.nazik.my_tshirt_android.R;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,12 +54,58 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.tshirt_container)
     RelativeLayout tshirtContainer;
 
+    /*@Bind(R.id.nav_view)
+    NavigationView navigationView;*/
+
+    @Bind(R.id.drawer_layout)
+    DrawerLayout drawer;
+
+    private ActionBarDrawerToggle toggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/arial.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+//        initUI();
+        toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+
+        //navigationView.setNavigationItemSelectedListener(this);
+        //navigationView.getMenu().getItem(0).setChecked(true);
+
+
+        /*if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, FeedFragment.newInstance()).commit();
+            if (getSupportActionBar() != null)
+                getSupportActionBar().setTitle("Home");
+            //TODO only at first app run
+            drawer.openDrawer(GravityCompat.START);
+        }*/
+
         initEditorViews();
+    }
+
+
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @OnClick(R.id.save_btn)

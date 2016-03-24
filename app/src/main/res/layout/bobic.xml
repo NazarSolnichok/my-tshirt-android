@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools=" http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/tshirt_container">
+        <ImageView
+            android:id="@+id/tshirt_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/tshirt_template"/>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/edit_container">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="qweqweq"
+                android:textSize="18sp"
+                tools:ignore="MissingPrefix"
+                fontPath="fonts/snap.ttf"/>
+        </FrameLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:orientation="vertical">
+        <Button
+        android:id="@+id/save_btn"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:text="save"/>
+        <Button
+            android:id="@+id/img_btn"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:text="img"/>
+        <Button
+            android:id="@+id/text_btn"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:text="text"/>
+    </LinearLayout>
+
+</RelativeLayout>
