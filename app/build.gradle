@@ -32,4 +32,5 @@ dependencies {
     }
 
     compile 'com.android.support:design:23.1.1'
+    compile 'org.xdty.preference:color-picker:0.0.4'
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="items">
+        <item>arial</item>
+        <item>consola</item>
+        <item>snap</item>
+        <item>times</item>
+    </string-array>
+
+
+</resources>

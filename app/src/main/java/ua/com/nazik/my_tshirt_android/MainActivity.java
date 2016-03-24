@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,8 +29,12 @@ import android.widget.TextView;
 import android.support.design.widget.NavigationView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.squareup.picasso.Picasso;
 
+
+import org.xdty.preference.colorpicker.ColorPickerDialog;
+import org.xdty.preference.colorpicker.ColorPickerSwatch;
 
 import java.io.File;
 
@@ -62,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBarDrawerToggle toggle;
     private DrawerHolder drawerHolder;
+    private ViewMovingHelper viewMovingHelper = new ViewMovingHelper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,20 +151,26 @@ public class MainActivity extends AppCompatActivity {
 
         private void setText(CharSequence input) {
             TextView textView = new TextView(MainActivity.this);
-            SpannableStringBuilder sBuilder = new SpannableStringBuilder();
-            sBuilder.append(input);
-            CalligraphyTypefaceSpan typefaceSpan = new CalligraphyTypefaceSpan(
-                    TypefaceUtils.load(getAssets(), "fonts/snap.ttf"));
-            sBuilder.setSpan(typefaceSpan, 0, input.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            textView.setText(sBuilder, TextView.BufferType.SPANNABLE);
+            textView.setText(input);
+            setTextViewFont(textView, "snap");
             textView.setLayoutParams(
                     new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                             FrameLayout.LayoutParams.WRAP_CONTENT));
-            ViewMovingHelper.initMoveListener(textView);
+            viewMovingHelper.initMoveListener(textView);
             editLayout.addView(textView);
             textView.setLayoutParams(
                     new FrameLayout.LayoutParams(editLayout.getWidth() / 2, editLayout.getHeight() / 2));
         }
+    }
+
+    void setTextViewFont(TextView textView, String font){
+        CharSequence input = textView.getText();
+        SpannableStringBuilder sBuilder = new SpannableStringBuilder();
+        sBuilder.append(input);
+        CalligraphyTypefaceSpan typefaceSpan = new CalligraphyTypefaceSpan(
+                TypefaceUtils.load(getAssets(), String.format("fonts/%s.ttf", font)));
+        sBuilder.setSpan(typefaceSpan, 0, input.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.setText(sBuilder, TextView.BufferType.SPANNABLE);
     }
 
     @Override
@@ -185,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
                 new com.squareup.picasso.Callback() {
                     @Override
                     public void onSuccess() {
-                        ViewMovingHelper.initMoveListener(imageView);
+                        viewMovingHelper.initMoveListener(imageView);
                         editLayout.addView(imageView);
                         imageView.setLayoutParams(
                                 new FrameLayout.LayoutParams(editLayout.getWidth() / 2, editLayout.getHeight() / 2));
@@ -200,11 +212,41 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.footer_font)
     void changeFont(){
-
+        final View currentView = viewMovingHelper.getCurrent();
+        if (currentView instanceof TextView){
+            new MaterialDialog.Builder(this)
+                    .title(R.string.font_dialog)
+                    .items(R.array.items)
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                            setTextViewFont(((TextView) currentView), text.toString());
+                        }
+                    })
+                    .show();
+        }
     }
 
     @OnClick(R.id.footer_color)
     void changeColor(){
+        final View currentView = viewMovingHelper.getCurrent();
+        if (currentView instanceof TextView) {
+            final int[] colors = getResources().getIntArray(R.array.default_rainbow);
+            ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_default_title,
+                    colors,
+                    ContextCompat.getColor(this, R.color.flamingo),
+                    5, // Number of columns
+                    ColorPickerDialog.SIZE_SMALL);
 
+            dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
+
+                @Override
+                public void onColorSelected(int color) {
+
+                    ((TextView)currentView).setTextColor(color);
+                }
+            });
+            dialog.show(getFragmentManager(), "color_dialog_test");
+        }
     }
 }
