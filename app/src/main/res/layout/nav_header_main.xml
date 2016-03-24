@@ -2,10 +2,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+    android:gravity="left"
+    android:padding="5dp">
 
-    <TextView
+    <Button
+        android:id="@+id/save_btn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="qeqwewqeq"/>
+        android:layout_height="40dp"
+        android:text="@string/save_image"/>
+    <Button
+        android:id="@+id/img_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="@string/add_image"/>
+    <Button
+        android:id="@+id/camera_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="@string/take_photo"/>
+    <Button
+        android:id="@+id/text_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="@string/add_text"/>
 </LinearLayout>

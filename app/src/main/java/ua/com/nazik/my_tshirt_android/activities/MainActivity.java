@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,6 +18,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -40,6 +43,8 @@ import butterknife.OnClick;
 import ua.com.nazik.my_tshirt_android.R;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import uk.co.chrisjenx.calligraphy.CalligraphyTypefaceSpan;
+import uk.co.chrisjenx.calligraphy.TypefaceUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,13 +59,14 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.tshirt_container)
     RelativeLayout tshirtContainer;
 
-    /*@Bind(R.id.nav_view)
-    NavigationView navigationView;*/
+    @Bind(R.id.nav_view)
+    NavigationView navigationView;
 
     @Bind(R.id.drawer_layout)
     DrawerLayout drawer;
 
     private ActionBarDrawerToggle toggle;
+    private DrawerHolder drawerHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,78 +77,95 @@ public class MainActivity extends AppCompatActivity {
                 .setDefaultFontPath("fonts/arial.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
-
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
-//        initUI();
+        initUI();
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        //noinspection deprecation
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
-
-        //navigationView.setNavigationItemSelectedListener(this);
-        //navigationView.getMenu().getItem(0).setChecked(true);
-
-
-        /*if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, FeedFragment.newInstance()).commit();
-            if (getSupportActionBar() != null)
-                getSupportActionBar().setTitle("Home");
-            //TODO only at first app run
-            drawer.openDrawer(GravityCompat.START);
-        }*/
-
         initEditorViews();
     }
-
-
 
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-    @OnClick(R.id.save_btn)
-    void saveClick(){
-        Bitmap bmp = getBitmapFromView(tshirtContainer);
-        saveBitmap(bmp);
+    private void initUI() {
+        View header = navigationView.getHeaderView(0);
+        drawerHolder = new DrawerHolder(header);
     }
 
-    @OnClick(R.id.img_btn)
-    void addImage(){
-        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, GALLERY_CODE);
-    }
 
-    @OnClick(R.id.text_btn)
-    void addText(){
-        new MaterialDialog.Builder(this)
-                .title(R.string.input)
-                .content(R.string.input_content)
-                .inputType(InputType.TYPE_CLASS_TEXT/* | InputType.TYPE_TEXT_VARIATION_PASSWORD*/)
-                .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
-                    @NonNull
-                    @Override
-                    public void onInput(MaterialDialog dialog, CharSequence input) {
-                        // Do something
-                        TextView textView = new TextView(MainActivity.this);
-                        textView.setText(input);
-                        textView.setLayoutParams(
-                                new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-                                        FrameLayout.LayoutParams.WRAP_CONTENT));
+    static Uri cameraUri;
 
-                        initMoveListener(textView);
-                        editLayout.addView(textView);
-                        textView.setLayoutParams(
-                                new FrameLayout.LayoutParams(editLayout.getWidth() / 2, editLayout.getHeight() / 2));
-                    }
-                }).show();
+    class DrawerHolder {
+        public DrawerHolder(View header){
+            ButterKnife.bind(this, header);
+        }
+
+        @OnClick(R.id.save_btn)
+        void saveClick() {
+            drawer.closeDrawer(GravityCompat.START);
+            Bitmap bmp = getBitmapFromView(tshirtContainer);
+            saveBitmap(bmp);
+
+        }
+
+        @OnClick(R.id.img_btn)
+        void addImage() {
+            drawer.closeDrawer(GravityCompat.START);
+            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, GALLERY_CODE);
+        }
+
+        @OnClick(R.id.text_btn)
+        void addText() {
+            drawer.closeDrawer(GravityCompat.START);
+            new MaterialDialog.Builder(MainActivity.this)
+                    .title(R.string.input)
+                    .content(R.string.input_content)
+                    .inputType(InputType.TYPE_CLASS_TEXT/* | InputType.TYPE_TEXT_VARIATION_PASSWORD*/)
+                    .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
+                        @NonNull
+                        @Override
+                        public void onInput(MaterialDialog dialog, CharSequence input) {
+                            // Do something
+                            setText(input);
+                        }
+                    }).show();
+        }
+
+        @OnClick(R.id.camera_btn)
+        void takePhoto(){
+            drawer.closeDrawer(GravityCompat.START);
+            Uri uri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "camera.jpg"));
+            cameraUri = uri;
+            Intent photoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            startActivityForResult(photoIntent, CAMERA_CODE);
+        }
+
+        private void setText(CharSequence input) {
+            TextView textView = new TextView(MainActivity.this);
+            SpannableStringBuilder sBuilder = new SpannableStringBuilder();
+            sBuilder.append(input);
+            CalligraphyTypefaceSpan typefaceSpan = new CalligraphyTypefaceSpan(
+                    TypefaceUtils.load(getAssets(), "fonts/snap.ttf"));
+            sBuilder.setSpan(typefaceSpan, 0, input.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            textView.setText(sBuilder, TextView.BufferType.SPANNABLE);
+            textView.setLayoutParams(
+                    new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                            FrameLayout.LayoutParams.WRAP_CONTENT));
+            initMoveListener(textView);
+            editLayout.addView(textView);
+            textView.setLayoutParams(
+                    new FrameLayout.LayoutParams(editLayout.getWidth() / 2, editLayout.getHeight() / 2));
+        }
     }
 
     @Override
@@ -152,6 +175,11 @@ public class MainActivity extends AppCompatActivity {
             if (requestCode == GALLERY_CODE) {
                 Uri imgUri = data.getData();
                 createImage(imgUri);
+            }else if (requestCode == CAMERA_CODE){
+                Uri imgUri = cameraUri;
+                if (imgUri != null) {
+                    createImage(imgUri);
+                }
             }
         }
     }
@@ -166,8 +194,6 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess() {
                 initMoveListener(imageView);
                 editLayout.addView(imageView);
-                //
-                //
                 imageView.setLayoutParams(
                         new FrameLayout.LayoutParams(editLayout.getWidth()/2, editLayout.getHeight()/2));
             }
@@ -177,27 +203,17 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
-
     }
 
     public static Bitmap getBitmapFromView(View view) {
-        //Define a bitmap with the same size as the view
         Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
-        //Bind a canvas to it
         Canvas canvas = new Canvas(returnedBitmap);
-        //Get the view's background
         Drawable bgDrawable =view.getBackground();
         if (bgDrawable!=null)
-            //has background drawable, then draw it on the canvas
             bgDrawable.draw(canvas);
         else
-            //does not have background drawable, then draw white background on the canvas
             canvas.drawColor(Color.WHITE);
-        // draw the view on the canvas
         view.draw(canvas);
-        //return the bitmap
         return returnedBitmap;
     }
 
@@ -208,8 +224,7 @@ public class MainActivity extends AppCompatActivity {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            // PNG is a lossless format, the compression factor (100) is ignored
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -238,7 +253,6 @@ public class MainActivity extends AppCompatActivity {
             Boolean b = false;
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-
                 if (view != view1)
                     return false;
                 switch (event.getAction()) {
@@ -250,11 +264,9 @@ public class MainActivity extends AppCompatActivity {
                             y = event.getRawY();
                         }
                         break;
-
                     case MotionEvent.ACTION_UP:
                         b = false;
                         break;
-
                     case MotionEvent.ACTION_DOWN:
                         x = event.getRawX();
                         y = event.getRawY();
@@ -262,7 +274,6 @@ public class MainActivity extends AppCompatActivity {
                         view.clearFocus();
                         break;
                 }
-
                 return true;
             }
         });

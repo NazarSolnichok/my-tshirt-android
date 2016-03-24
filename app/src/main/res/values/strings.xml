@@ -6,4 +6,8 @@
     <string name="input_prefill">input prefill</string>
     <string name="navigation_drawer_open">open</string>
     <string name="navigation_drawer_close">close</string>
+    <string name="add_image">Add gallery image</string>
+    <string name="save_image">Save image</string>
+    <string name="add_text">Add text</string>
+    <string name="take_photo">Take photo</string>
 </resources>
