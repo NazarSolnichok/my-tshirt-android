@@ -1,4 +1,4 @@
-package ua.com.nazik.my_tshirt_android.activities;
+package ua.com.nazik.my_tshirt_android;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,13 +20,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.support.design.widget.NavigationView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -34,13 +32,10 @@ import com.squareup.picasso.Picasso;
 
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import ua.com.nazik.my_tshirt_android.R;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import uk.co.chrisjenx.calligraphy.CalligraphyTypefaceSpan;
@@ -87,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         //noinspection deprecation
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-        initEditorViews();
     }
 
     @Override
@@ -111,9 +105,8 @@ public class MainActivity extends AppCompatActivity {
         @OnClick(R.id.save_btn)
         void saveClick() {
             drawer.closeDrawer(GravityCompat.START);
-            Bitmap bmp = getBitmapFromView(tshirtContainer);
-            saveBitmap(bmp);
-
+            Bitmap bmp = MyBitmapHelper.getBitmapFromView(tshirtContainer);
+            MyBitmapHelper.saveBitmap(MainActivity.this, bmp);
         }
 
         @OnClick(R.id.img_btn)
@@ -161,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             textView.setLayoutParams(
                     new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                             FrameLayout.LayoutParams.WRAP_CONTENT));
-            initMoveListener(textView);
+            ViewMovingHelper.initMoveListener(textView);
             editLayout.addView(textView);
             textView.setLayoutParams(
                     new FrameLayout.LayoutParams(editLayout.getWidth() / 2, editLayout.getHeight() / 2));
@@ -190,94 +183,28 @@ public class MainActivity extends AppCompatActivity {
         imageView.setMaxHeight(100);
         Picasso.with(this).load(imgUri).resize(100, 100).centerCrop().into(imageView,
                 new com.squareup.picasso.Callback() {
-            @Override
-            public void onSuccess() {
-                initMoveListener(imageView);
-                editLayout.addView(imageView);
-                imageView.setLayoutParams(
-                        new FrameLayout.LayoutParams(editLayout.getWidth()/2, editLayout.getHeight()/2));
-            }
+                    @Override
+                    public void onSuccess() {
+                        ViewMovingHelper.initMoveListener(imageView);
+                        editLayout.addView(imageView);
+                        imageView.setLayoutParams(
+                                new FrameLayout.LayoutParams(editLayout.getWidth() / 2, editLayout.getHeight() / 2));
+                    }
 
-            @Override
-            public void onError() {
+                    @Override
+                    public void onError() {
 
-            }
-        });
+                    }
+                });
     }
 
-    public static Bitmap getBitmapFromView(View view) {
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(returnedBitmap);
-        Drawable bgDrawable =view.getBackground();
-        if (bgDrawable!=null)
-            bgDrawable.draw(canvas);
-        else
-            canvas.drawColor(Color.WHITE);
-        view.draw(canvas);
-        return returnedBitmap;
+    @OnClick(R.id.footer_font)
+    void changeFont(){
+
     }
 
-    private void saveBitmap(Bitmap bmp) {
-        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        dir.mkdirs();
-        File file = new File(dir, "sketchpad" + 1 + ".png");
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                    Toast.makeText(this, "Success", Toast.LENGTH_LONG).show();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    @OnClick(R.id.footer_color)
+    void changeColor(){
+
     }
-
-    private void initEditorViews() {
-        for(int i=0; i< editLayout.getChildCount(); ++i) {
-            final View view1 = editLayout.getChildAt(i);
-            initMoveListener(view1);
-        }
-    }
-
-    private void initMoveListener(final View view1) {
-        view1.setOnTouchListener(new View.OnTouchListener() {
-            float x = 0;
-            float y = 0;
-            Boolean b = false;
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                if (view != view1)
-                    return false;
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        if (b) {
-                            view.setX(view.getX() + event.getRawX() - x);
-                            view.setY(view.getY() + event.getRawY() - y);
-                            x = event.getRawX();
-                            y = event.getRawY();
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        b = false;
-                        break;
-                    case MotionEvent.ACTION_DOWN:
-                        x = event.getRawX();
-                        y = event.getRawY();
-                        b = true;
-                        view.clearFocus();
-                        break;
-                }
-                return true;
-            }
-        });
-    }
-
-
 }

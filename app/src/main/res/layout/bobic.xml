@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools=" http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_weight="1">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:id="@+id/tshirt_container">
         <ImageView
             android:id="@+id/tshirt_img"
@@ -29,6 +31,13 @@
         </FrameLayout>
     </RelativeLayout>
 
+    <FrameLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark">
+        <include layout="@layout/footer"/>
+    </FrameLayout>
 
 
-</RelativeLayout>
+</LinearLayout>
