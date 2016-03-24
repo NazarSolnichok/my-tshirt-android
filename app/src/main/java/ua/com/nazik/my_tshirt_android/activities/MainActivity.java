@@ -1,5 +1,6 @@
 package ua.com.nazik.my_tshirt_android.activities;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -56,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initEditorViews();
-
     }
 
     @OnClick(R.id.save_btn)
@@ -89,7 +90,9 @@ public class MainActivity extends AppCompatActivity {
                                         FrameLayout.LayoutParams.WRAP_CONTENT));
 
                         initMoveListener(textView);
-                        tshirtContainer.addView(textView);
+                        editLayout.addView(textView);
+                        textView.setLayoutParams(
+                                new FrameLayout.LayoutParams(editLayout.getWidth() / 2, editLayout.getHeight() / 2));
                     }
                 }).show();
     }
@@ -114,7 +117,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 initMoveListener(imageView);
-                tshirtContainer.addView(imageView);
+                editLayout.addView(imageView);
+                //
+                //
+                imageView.setLayoutParams(
+                        new FrameLayout.LayoutParams(editLayout.getWidth()/2, editLayout.getHeight()/2));
             }
 
             @Override
