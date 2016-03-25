@@ -30,6 +30,7 @@ import android.support.design.widget.NavigationView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.soundcloud.android.crop.Crop;
 import com.squareup.picasso.Picasso;
 
 
@@ -173,13 +174,17 @@ public class MainActivity extends AppCompatActivity {
         textView.setText(sBuilder, TextView.BufferType.SPANNABLE);
     }
 
+    Uri outputUri = null;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == GALLERY_CODE) {
                 Uri imgUri = data.getData();
-                createImage(imgUri);
+                //
+                Crop.of(imgUri, outputUri).asSquare().start(this);
+                //createImage(outputUri);
             }else if (requestCode == CAMERA_CODE){
                 Uri imgUri = cameraUri;
                 if (imgUri != null) {
@@ -187,6 +192,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+        if (requestCode == Crop.REQUEST_CROP && resultCode == RESULT_OK) {
+            doSomethingWithCroppedImage(outputUri);
+        }
+    }
+
+    private void doSomethingWithCroppedImage(Uri data) {
+
     }
 
     private void createImage(Uri imgUri) {
