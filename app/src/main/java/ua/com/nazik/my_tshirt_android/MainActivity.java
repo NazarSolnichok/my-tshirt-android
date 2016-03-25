@@ -249,4 +249,27 @@ public class MainActivity extends AppCompatActivity {
             dialog.show(getFragmentManager(), "color_dialog_test");
         }
     }
+
+    @OnClick(R.id.footer_edit)
+    void eitText(){
+        final View currentView = viewMovingHelper.getCurrent();
+        if (true) {
+            final int[] colors = getResources().getIntArray(R.array.default_rainbow);
+            ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_default_title,
+                    colors,
+                    ContextCompat.getColor(this, R.color.flamingo),
+                    5, // Number of columns
+                    ColorPickerDialog.SIZE_SMALL);
+
+            dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
+
+                @Override
+                public void onColorSelected(int color) {
+
+                    tshirtImg.setColorFilter(color);
+                }
+            });
+            dialog.show(getFragmentManager(), "color_dialog_test");
+        }
+    }
 }
