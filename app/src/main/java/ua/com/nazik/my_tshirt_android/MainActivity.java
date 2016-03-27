@@ -127,10 +127,10 @@ public class MainActivity extends AppCompatActivity {
         void addText() {
             drawer.closeDrawer(GravityCompat.START);
             new MaterialDialog.Builder(MainActivity.this)
-                    .title(R.string.input)
-                    .content(R.string.input_content)
+                    .title("Please, write your text here")
+                    .content("It will be on your shirt")
                     .inputType(InputType.TYPE_CLASS_TEXT/* | InputType.TYPE_TEXT_VARIATION_PASSWORD*/)
-                    .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
+                    .input("Here...", "" , new MaterialDialog.InputCallback() {
                         @NonNull
                         @Override
                         public void onInput(MaterialDialog dialog, CharSequence input) {
@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
         final View currentView = viewMovingHelper.getCurrent();
         if (currentView instanceof TextView){
             new MaterialDialog.Builder(this)
-                    .title(R.string.font_dialog)
+                    .title("Choose font")
                     .items(R.array.items)
                     .itemsCallback(new MaterialDialog.ListCallback() {
                         @Override
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
             ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_default_title,
                     colors,
                     ContextCompat.getColor(this, R.color.flamingo),
-                    5, // Number of columns
+                    4, // Number of columns
                     ColorPickerDialog.SIZE_SMALL);
 
             dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
             ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_default_title,
                     colors,
                     ContextCompat.getColor(this, R.color.flamingo),
-                    5, // Number of columns
+                    4, // Number of columns
                     ColorPickerDialog.SIZE_SMALL);
 
             dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
